@@ -3,15 +3,16 @@ package org.dobots.robotcontrol;
 import java.util.HashMap;
 
 import org.dobots.aim.AimProtocol;
-import org.dobots.communication.control.RemoteControlSender;
-import org.dobots.communication.msg.RoboCommands.BaseCommand;
-import org.dobots.communication.video.VideoHelper;
+import org.dobots.aimrobotlibrary.AimRobotActivity;
+import org.dobots.lib.comm.msg.RoboCommands.BaseCommand;
 import org.dobots.utilities.Utils;
 import org.dobots.utilities.VerticalSeekBar;
+import org.dobots.zmq.video.gui.VideoHelper;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import robots.ctrl.RemoteControlHelper;
+import robots.ctrl.RemoteControlSender;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -26,7 +27,7 @@ import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 
-public class MainActivity extends AimActivity {
+public class RobotControl extends AimRobotActivity {
 
 	private static final String TAG = "RobotControl";
 	private static final String MODULE_NAME = "RobotControlModule";
@@ -96,7 +97,7 @@ public class MainActivity extends AimActivity {
 		
 		@Override
 		protected void sendCommand(BaseCommand i_oCmd) {
-			mAimConnectionHelper.sendData(getOutMessenger("cmd"), i_oCmd.toJSONString());
+			sendData(getOutMessenger("cmd"), i_oCmd.toJSONString());
 		}
 
 		@Override
@@ -194,11 +195,11 @@ public class MainActivity extends AimActivity {
 	}
 
 	@Override
-	protected void onDestroy() {
+	public void onDestroy() {
 		super.onDestroy();
 
 		if (mVideoHelper != null) {
-			mVideoHelper.onDestroy();
+			mVideoHelper.destroy();
 		}
 	}
 	

@@ -17,13 +17,15 @@ public class RomoService extends AimRobotService {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		mRobot = new RobotServiceBinder(new Romo());
+		Romo romo = new Romo();
+		romo.startCamera(this);
+		setRobot(new RobotServiceBinder(romo));
 	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		mRobot.destroy();
+		getRobot().destroy();
 	}
 
 }

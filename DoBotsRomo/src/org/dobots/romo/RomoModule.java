@@ -1,6 +1,6 @@
 package org.dobots.romo;
 
-import org.dobots.communication.zmq.ZmqHandler;
+import org.dobots.zmq.ZmqHandler;
 
 import robots.RobotType;
 import robots.romo.gui.RomoRobot;

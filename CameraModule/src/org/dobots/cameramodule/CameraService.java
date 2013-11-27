@@ -4,15 +4,15 @@ import java.util.HashMap;
 
 import org.dobots.aim.AimProtocol;
 import org.dobots.aim.AimService;
-import org.dobots.communication.msg.RoboCommands;
-import org.dobots.communication.msg.RoboCommands.BaseCommand;
-import org.dobots.communication.msg.RoboCommands.CameraCommand;
-import org.dobots.communication.msg.RoboCommands.ControlCommand;
-import org.dobots.communication.video.IRawVideoListener;
-import org.dobots.communication.video.VideoThrottle;
+import org.dobots.lib.comm.msg.RoboCommands;
+import org.dobots.lib.comm.msg.RoboCommands.BaseCommand;
+import org.dobots.lib.comm.msg.RoboCommands.CameraCommand;
+import org.dobots.lib.comm.msg.RoboCommands.ControlCommand;
 import org.dobots.utilities.CameraPreview;
 import org.dobots.utilities.CameraPreview.CameraPreviewCallback;
 import org.dobots.utilities.ThreadMessenger;
+import org.dobots.zmq.video.IRawVideoListener;
+import org.dobots.zmq.video.VideoThrottle;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -163,6 +163,8 @@ public class CameraService extends AimService implements SurfaceHolder.Callback,
 		
 		// remove the view
 		mWindowManager.removeView(mCameraPreview);
+		
+		mVideoThrottle.stopThread();
 		
 		mPortCmdInReceiver.destroy();
 	}
