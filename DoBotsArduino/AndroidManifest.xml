@@ -1,0 +1,52 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.dobots.arduino"
+    android:versionCode="1"
+    android:versionName="1.0" >
+
+    <uses-sdk
+        android:minSdkVersion="8"
+        android:targetSdkVersion="17" />
+
+    <uses-permission android:name="android.permission.BLUETOOTH"/>
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/launcher"
+        android:label="@string/app_name" >
+        <activity
+            android:name="org.dobots.arduino.ArduinoModule"
+            android:label="@string/app_name"
+		    android:screenOrientation="portrait" >
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity android:name="robots.gui.DeviceListActivity"
+			android:label="@string/select_device"
+			android:screenOrientation="portrait" 
+			android:theme="@android:style/Theme.Dialog"
+			android:configChanges="keyboardHidden|orientation"></activity>
+        
+        <activity android:name="org.dobots.arduino.ArduinoBTConnectorModule"
+            android:theme="@android:style/Theme.NoDisplay" ></activity>
+
+        <service
+			android:name="org.dobots.arduino.ArduinoService" >
+			<!-- making the service into it's own process will screw up the ZmqHandler!
+			     android:process=":remote"  -->
+			<intent-filter>
+				<action android:name="android.intent.action.RUN" />
+				<category android:name="android.intent.category.DEFAULT" />
+			</intent-filter>
+		</service>
+    </application>
+
+</manifest>
