@@ -1,0 +1,29 @@
+{
+	"name":"Rover2Module",
+	"type":"background",
+	"category":"Robot",
+	"description":"Provides a controller for the Rover 2.0 robot",
+	"default_middleware":"android",
+	"supported_middleware": ["android"],
+	"supported_devices": ["android"],
+	"enable":"true",
+	"git":"https://github.com/eggerdo/aim_modules.git",
+	"android": {
+		"package":"org.dobots.rover2",
+		"url":""
+	},
+	"ports": [
+		{
+			"name":"cmd",
+			"dir":"in",
+			"type":"string",
+			"middleware":"android"
+		},
+		{
+			"name":"video",
+			"dir":"out",
+			"type":"string",
+			"middleware":"android"
+		}
+	]
+}

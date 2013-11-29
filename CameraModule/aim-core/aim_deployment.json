@@ -1,0 +1,29 @@
+{
+	"name":"CameraModule",
+	"type":"background",
+	"category":"Image processing",
+	"description":"Provides Android Camera as video output",
+	"default_middleware":"android",
+	"supported_middleware": ["android"],
+	"supported_devices": ["android"],
+	"enable":"true",
+	"git":"https://github.com/eggerdo/aim_modules.git",
+	"android": {
+		"package":"org.dobots.cameramodule",
+		"url":""
+	},
+	"ports": [
+		{
+			"name":"cmd",
+			"dir":"in",
+			"type":"string",
+			"middleware":"android"
+		},
+		{
+			"name":"video",
+			"dir":"out",
+			"type":"string",
+			"middleware":"android"
+		}
+	]
+}

@@ -1,0 +1,23 @@
+{
+	"name":"ArduinoModule",
+	"type":"background",
+	"category":"Robot",
+	"description":"Provides a controller for an arduino robot",
+	"default_middleware":"android",
+	"supported_middleware": ["android"],
+	"supported_devices": ["android"],
+	"enable":"true",
+	"git":"https://github.com/eggerdo/aim_modules.git",
+	"android": {
+		"package":"org.dobots.arduino",
+		"url":""
+	},
+	"ports": [
+		{
+			"name":"cmd",
+			"dir":"in",
+			"type":"string",
+			"middleware":"android"
+		}
+	]
+}
