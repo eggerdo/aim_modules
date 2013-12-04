@@ -2,12 +2,10 @@ package org.dobots.cameramodule;
 
 import java.util.List;
 
+import org.dobots.aim.SimpleAimServiceUI;
 import org.dobots.cameramodule.CameraService.CameraBinder;
 import org.dobots.utilities.Utils;
 
-import android.app.Activity;
-import android.app.ActivityManager;
-import android.app.ActivityManager.RunningServiceInfo;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -18,7 +16,6 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -29,20 +26,13 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-public class CameraModule extends Activity {
+public class CameraModule extends SimpleAimServiceUI {
 
-	private static final int WATCHDOG_INTERVAL = 500;
-	
 	private static final String TAG = "CameraModule";
 	
 	private boolean mBound = false;
 	
-    private Handler mUiHandler = new Handler();
-    
 	private CameraService mCamera = null;
-
-	private ToggleButton btnStartStop;
-	private TextView txtMessageStatus;
 
 	private EditText edtFrameRate;
 	private Spinner spPreviewSizes;
@@ -54,14 +44,10 @@ public class CameraModule extends Activity {
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+		super.onCreate(savedInstanceState, CameraService.class, R.layout.main);
 
 		Intent intent = new Intent(this, CameraService.class);
 		this.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-		
-		setLayout();
-		
-		mUiHandler.postDelayed(mWatchdog, WATCHDOG_INTERVAL);
 	}
 	
 	@Override
@@ -130,23 +116,9 @@ public class CameraModule extends Activity {
 		}
 	};
 
-	private void setLayout() {
-		setContentView(R.layout.main);
-		
-		btnStartStop = (ToggleButton) findViewById(R.id.btnStartStop);
-		btnStartStop.setOnClickListener(new OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				if (!btnStartStop.isChecked()) {
-					stopService();
-				} else {
-					startService();
-				}
-			}
-		});
-		
-		txtMessageStatus = (TextView) findViewById(R.id.txtModuleStatus);
+	@Override
+	protected void setLayout(int layoutResID) {
+		super.setLayout(layoutResID);
 		
 		edtFrameRate = (EditText) findViewById(R.id.edtFrameRate);
 		edtFrameRate.setOnFocusChangeListener(new OnFocusChangeListener() {
@@ -188,56 +160,24 @@ public class CameraModule extends Activity {
 		});
 	}
 	
-	private void startService() {
-		Intent intent = new Intent(this, CameraService.class);
-		intent.putExtra("id", 0); // Default id
-		
+	@Override
+	protected void startService() {
 		// first start to the service ...
-		startService(intent);
-		Log.i(TAG, "Starting: " + intent.toString());
+		super.startService();
 		
 		// ... then bind to it. don't start the service by binding to it
 		// otherwise the service will be stopped when the the module unbinds.
+		Intent intent = new Intent(this, CameraService.class);
 		bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
 	}
 
-    private void stopService() {
+    protected void stopService() {
     	// first unbind from the service, otherwise the service won't get stopped ...
 		if (mBound) {
 			unbindService(mConnection);
 			mBound = false;
 		}
 
-		// ... then stop the service
-		Intent intent = new Intent(this, CameraService.class);
-		stopService(intent);
-		
-		Log.i(TAG, "Stopping service: " + intent.toString());
+		super.stopService();
 	}
-
-    private boolean isServiceRunning(Class serviceClass) {
-		Log.d(TAG, "Checking if service is running...");
-		ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
-		for (RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
-			if (serviceClass.getName().equals(service.service.getClassName())) {
-				return true;
-			}
-		}
-		return false;
-	}
-    
-    private Runnable mWatchdog = new Runnable() {
-		
-		@Override
-		public void run() {
-			if (isServiceRunning(CameraService.class)){
-				txtMessageStatus.setText("Module running");
-				btnStartStop.setChecked(true);
-			} else {
-				txtMessageStatus.setText("Module stopped");
-				btnStartStop.setChecked(false);
-			}
-			mUiHandler.postDelayed(this, WATCHDOG_INTERVAL);
-		}
-	};
 }
