@@ -1,0 +1,87 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/layout"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:padding="16dp"
+	android:clickable="true"
+	android:focusable="true"
+	android:focusableInTouchMode="true"  >
+	
+    <requestFocus />
+
+	<TextView
+		android:id="@+id/txtModuleStatus"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentTop="true"
+		android:text="Module status"
+		android:textAppearance="?android:attr/textAppearanceMedium" />
+	
+	<ToggleButton
+		android:id="@+id/btnStartStop"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@+id/txtModuleStatus"
+		android:layout_marginTop="32dp"
+		android:layout_marginLeft="32dp"
+		android:layout_alignLeft="@+id/txtModuleStatus"
+		android:textOn="Stop"
+		android:textOff="Start" />
+	
+	<ImageView
+		android:id="@+id/imageView1"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignTop="@+id/txtModuleStatus"
+		android:layout_alignParentRight="true"
+		android:layout_marginRight="16dp"
+		android:src="@drawable/launcher" />
+
+	<TextView
+		android:id="@+id/textView1"	
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignLeft="@+id/txtModuleStatus"
+		android:layout_below="@+id/btnStartStop"
+		android:layout_marginTop="32dp"
+		android:text="This is an AIM module, which runs in the background. Connect it to other modules via the Dodedodo website." />
+
+	<TextView
+	    android:id="@+id/textView2"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_below="@+id/textView1"
+	    android:layout_marginTop="32dp"
+	    android:text="Frame Rate" />
+	
+	<EditText
+	    android:id="@+id/edtFrameRate"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignBaseline="@+id/textView2"
+	    android:layout_marginLeft="16dp"
+	    android:layout_toRightOf="@+id/textView2"
+	    android:ems="4"
+	    android:inputType="numberDecimal" >
+
+	</EditText>
+
+	<TextView
+	    android:id="@+id/textView5"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignLeft="@+id/textView2"
+	    android:layout_below="@+id/textView2"
+	    android:layout_marginTop="32dp"
+	    android:text="Video Size" />
+
+	<Spinner
+	    android:id="@+id/spPreviewSizes"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+		android:layout_alignBaseline="@+id/textView5"
+		android:layout_toRightOf="@+id/textView5"
+		android:layout_alignLeft="@+id/edtFrameRate" />
+
+</RelativeLayout>

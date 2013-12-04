@@ -1,6 +1,7 @@
 package org.dobots.cameramodule;
 
 import java.util.HashMap;
+import java.util.List;
 
 import org.dobots.aim.AimProtocol;
 import org.dobots.aim.AimService;
@@ -19,6 +20,8 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PixelFormat;
+import android.hardware.Camera.Size;
+import android.os.Binder;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
@@ -65,9 +68,9 @@ public class CameraService extends AimService implements SurfaceHolder.Callback,
 				if (cmd instanceof ControlCommand) {
 					ControlCommand control = (ControlCommand)cmd;
 					if (control.mCommand.equals("setFrameRate")) {
-						mVideoThrottle.setFrameRate((Double)control.getParameter(0));
+						setFrameRate((Double)control.getParameter(0));
 					} else if (control.mCommand.equals("setSize")) {
-						mCameraPreview.setPreviewSize((Integer)control.getParameter(0), (Integer)control.getParameter(1));
+						setPreviewSize((Integer)control.getParameter(0), (Integer)control.getParameter(1));
 					}
 				} else if (cmd instanceof CameraCommand) {
 					CameraCommand camera = (CameraCommand)cmd;
@@ -102,9 +105,39 @@ public class CameraService extends AimService implements SurfaceHolder.Callback,
 		list.put("video", null);
 	}
 	
+	private IBinder mBinder = new CameraBinder();
+	
+	public class CameraBinder extends Binder {
+		
+		public CameraService getCamera() {
+			return CameraService.this;
+		}
+		
+	}
+	
+	public void setFrameRate(double rate) {
+		mVideoThrottle.setFrameRate(rate);
+	}
+	
+	public double getFrameRate() {
+		return mVideoThrottle.getFrameRate();
+	}
+	
+	public void setPreviewSize(int width, int height) {
+		mCameraPreview.setPreviewSize(width, height);
+	}
+	
+	public Size getPreviewSize() {
+		return mCameraPreview.getPreviewSize();
+	}
+	 
+    public List<Size> getSupportedPreviewSizes() {
+    	return mCameraPreview.getSupportedPreviewSizes();
+    }
+    
 	@Override
 	public IBinder onBind(Intent arg0) {
-		return null;
+		return mBinder;
 	}
 	
 	@Override
@@ -139,7 +172,7 @@ public class CameraService extends AimService implements SurfaceHolder.Callback,
 		
 		mVideoThrottle = new VideoThrottle("videoThrottle");
 		mVideoThrottle.setRawVideoListener(this);
-		mVideoThrottle.setFrameRate(1.0);
+		mVideoThrottle.setFrameRate(20.0);
 		
 		mCameraPreview.setFrameListener(new CameraPreviewCallback() {
 			
