@@ -22,10 +22,4 @@ public class RomoService extends AimRobotService {
 		setRobot(new RobotServiceBinder(romo));
 	}
 
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		getRobot().destroy();
-	}
-
 }
