@@ -3,6 +3,8 @@ package org.dobots.robotcontrol;
 import java.util.HashMap;
 
 import org.dobots.aim.AimProtocol;
+import org.dobots.aim.AimProtocol.AimDataTypeException;
+import org.dobots.aim.AimUtils;
 import org.dobots.aimrobotlibrary.AimRobotActivity;
 import org.dobots.lib.comm.msg.RoboCommands.BaseCommand;
 import org.dobots.utilities.Utils;
@@ -13,6 +15,7 @@ import org.json.JSONObject;
 
 import robots.ctrl.RemoteControlHelper;
 import robots.ctrl.RemoteControlSender;
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -41,7 +44,11 @@ public class RobotControl extends AimRobotActivity {
 			switch (msg.what) {
 			case AimProtocol.MSG_PORT_DATA:
 				// handle video data
-				handleVideo(AimProtocol.getStringData(msg));
+				try {
+					handleVideo(AimUtils.getStringData(msg));
+				} catch (AimDataTypeException e) {
+					e.printStackTrace();
+				}
 				break;
 			default:
 				super.handleMessage(msg);
@@ -125,6 +132,7 @@ public class RobotControl extends AimRobotActivity {
 			m_bCameraControl = savedInstanceState.getBoolean("cameraCtrl");
 		}
 
+		showCameraControl(m_bCameraControl);
 	}
 
 	@Override
@@ -231,11 +239,11 @@ public class RobotControl extends AimRobotActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
     	super.onCreateOptionsMenu(menu);
     	
-    	menu.add(Menu.NONE, MENU_CAMERA_CONTROL, MENU_CAMERA_CONTROL, "Camera Control");
+    	menu.add(Menu.NONE, MENU_CAMERA_CONTROL, MENU_CAMERA_CONTROL, "Camera Control ON");
     	
     	return true;
     }
-    
+
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
     	Utils.updateOnOffMenuItem(menu.findItem(MENU_CAMERA_CONTROL), m_bCameraControl);
