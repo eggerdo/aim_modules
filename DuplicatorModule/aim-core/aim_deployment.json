@@ -1,32 +1,32 @@
 {
-	"name":"MultiplexerModule",
+	"name":"DuplicatorModule",
 	"type":"background",
 	"category":"General",
-	"description":"Provides a multiplexer for string data with one in and two outs",
+	"description":"Provides a duplicator for string message data with one in and two outs",
 	"default_middleware":"android",
 	"supported_middleware": ["android"],
 	"supported_devices": ["android"],
 	"enable":"true",
 	"git":"https://github.com/eggerdo/aim_modules.git",
 	"android": {
-		"package":"org.dobots.multiplexer",
-		"url":""
+		"package":"org.dobots.duplicator",
+		"url":"https://play.google.com/store/apps/details?id=org.dobots.duplicator"
 	},
 	"ports": [
 		{
-			"name":"incoming",
+			"name":"in",
 			"dir":"in",
 			"type":"string",
 			"middleware":"android"
 		},
 		{
-			"name":"outgoing1",
+			"name":"out1",
 			"dir":"out",
 			"type":"string",
 			"middleware":"android"
 		},
 		{
-			"name":"outgoing2",
+			"name":"out1",
 			"dir":"out",
 			"type":"string",
 			"middleware":"android"

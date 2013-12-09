@@ -7,4 +7,4 @@ It provides two ports:
 1. cmd. (output) sends control commands for robot and camera
 2. video. (input) receives video frames as base64 encoded strings and displays them on screen
 
-The android module can be downloaded on the Google Play store [here]().
+The android module can be downloaded on the Google Play store [here](https://play.google.com/store/apps/details?id=org.dobots.robotcontrol).

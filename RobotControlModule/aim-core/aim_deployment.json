@@ -10,7 +10,7 @@
 	"git":"https://github.com/eggerdo/aim_modules.git",
 	"android": {
 		"package":"org.dobots.robotcontrol",
-		"url":""
+		"url":"https://play.google.com/store/apps/details?id=org.dobots.robotcontrol"
 	},
 	"ports": [
 		{

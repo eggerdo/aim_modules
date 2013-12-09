@@ -4,4 +4,4 @@ This is an android AIM Module (to be used in the Dodedodo framework, see www.dod
 
 It provides 1 input port and 2 output ports.
 
-The android module can be downloaded on the Google Play store [here]().
+The android module can be downloaded on the Google Play store [here](https://play.google.com/store/apps/details?id=org.dobots.duplicator).

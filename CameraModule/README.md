@@ -9,4 +9,4 @@ It provides two ports:
 
 In addition, a UI is provided over which the frame rate and the video size can be adjusted.
 
-The android module can be downloaded on the Google Play store [here]().
+The android module can be downloaded on the Google Play store [here](https://play.google.com/store/apps/details?id=org.dobots.cameramodule).
