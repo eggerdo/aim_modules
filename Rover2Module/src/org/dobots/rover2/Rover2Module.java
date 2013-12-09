@@ -1,16 +1,11 @@
 package org.dobots.rover2;
 
 
-import org.dobots.communication.zmq.ZmqHandler;
-import org.dobots.utilities.Utils;
+import org.dobots.zmq.ZmqHandler;
 
 import robots.RobotType;
-import robots.remote.RemoteRobotMessenger;
-import robots.rover.rover2.ctrl.remote.Rover2RemoteMessenger;
 import robots.rover.rover2.ctrl.remote.Rover2RemoteBinder;
 import robots.rover.rover2.gui.Rover2Robot;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -45,6 +40,8 @@ public class Rover2Module extends Rover2Robot  {
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
+		
+		getRobot().setHandler(null);
 		
 		// we have to call that here because with OwnsRobot=false the robot
 		// is not automatically destroyed by the RobotView

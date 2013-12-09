@@ -1,13 +1,9 @@
 package org.dobots.rover2;
 
 import org.dobots.aimrobotlibrary.AimRobotService;
-import org.dobots.communication.zmq.ZmqHandler;
 
 import robots.remote.RobotServiceBinder;
 import robots.rover.rover2.ctrl.Rover2;
-import android.content.Intent;
-import android.os.IBinder;
-import android.util.Log;
 
 public class Rover2Service extends AimRobotService {
 
@@ -16,7 +12,7 @@ public class Rover2Service extends AimRobotService {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		mRobot = new RobotServiceBinder(new Rover2());
+		setRobot(new RobotServiceBinder(new Rover2()));
 	}
 
 	@Override
@@ -24,10 +20,4 @@ public class Rover2Service extends AimRobotService {
 		return MODULE_NAME;
 	}
 	
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-		mRobot.destroy();
-	}
-
 }
