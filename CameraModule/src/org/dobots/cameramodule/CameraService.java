@@ -17,31 +17,23 @@ import org.dobots.zmq.video.VideoThrottle;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.PixelFormat;
 import android.hardware.Camera.Size;
 import android.os.Binder;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
-import android.util.Log;
-import android.view.SurfaceHolder;
-import android.view.ViewGroup.LayoutParams;
-import android.view.WindowManager;
 
-public class CameraService extends AimService implements SurfaceHolder.Callback, IRawVideoListener {
+public class CameraService extends AimService implements IRawVideoListener {
 
 	private static final String TAG = "CameraService";
 	private static final String MODULE_NAME = "CameraModule";
 	
 	private CameraPreview mCameraPreview;
-	private WindowManager mWindowManager;
 	private VideoThrottle mVideoThrottle;
 	
 	@Override
 	public String getModuleName() {
-		// TODO Auto-generated method stub
 		return MODULE_NAME;
 	}
 
@@ -95,7 +87,6 @@ public class CameraService extends AimService implements SurfaceHolder.Callback,
 			return true;
 		}
 	};
-	private LayoutParams params;
 	
 	public void defineInMessenger(HashMap<String, Messenger> list) {
 		list.put("cmd", mPortCmdInReceiver.getMessenger());
@@ -136,44 +127,21 @@ public class CameraService extends AimService implements SurfaceHolder.Callback,
     }
     
 	@Override
-	public IBinder onBind(Intent arg0) {
+	public IBinder onBind(Intent intent) {
 		return mBinder;
 	}
 	
 	@Override
 	public void onCreate() {
 		super.onCreate();
-
-		// On some Android devices, Camera Preview is only available if
-		// a valid SurfaceView is provided. Valid meaning not a dummy SurfaceView.
-		// to get a valid SurfaceView in a Service which doesn't have a layout we
-		// create a dummy SurfaceView and assign it to the window manager. the window
-		// manager then creates the underlying surface so that the camera preview can
-		// be obtained.
-		mCameraPreview = new CameraPreview(getApplicationContext());
+		
+		mCameraPreview = CameraPreview.createCameraWithoutSurface(this);
 		mCameraPreview.setPreviewSize(320, 240);
-		
-		mWindowManager = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
-		
-		// we assign dummy values as width and height to the surfaceview. we actually
-		// want it to be invisible, but we cannot assign 0 as width and hight or the
-		// surface would not be created. once the surface is created we can then make
-		// it invisible
-		params = new WindowManager.LayoutParams(1, 1,
-		            WindowManager.LayoutParams.TYPE_SYSTEM_OVERLAY,
-		            WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH,
-		            PixelFormat.TRANSLUCENT);    
-		
-		// register callback to be notified once the surface is created
-		mCameraPreview.getHolder().addCallback(this);
-	    
-		// add the view to the window manager to let it create the surface
-		mWindowManager.addView(mCameraPreview, params);
-		
+
 		mVideoThrottle = new VideoThrottle("videoThrottle");
 		mVideoThrottle.setRawVideoListener(this);
 		mVideoThrottle.setFrameRate(20.0);
-		
+
 		mCameraPreview.setFrameListener(new CameraPreviewCallback() {
 			
 			@Override
@@ -187,43 +155,11 @@ public class CameraService extends AimService implements SurfaceHolder.Callback,
 	public void onDestroy() {
 		super.onDestroy();
 
-		// we have to make the camera preview visible again otherwise the
-		// surface doesn't get destroyed (and the camera continues running)
-		LayoutParams params = mCameraPreview.getLayoutParams();
-		params.height = 1;
-		params.width = 1;
-		mWindowManager.updateViewLayout(mCameraPreview, params);
-		
-		// remove the view
-		mWindowManager.removeView(mCameraPreview);
-		
+		mCameraPreview.destroy();
 		mVideoThrottle.stopThread();
-		
 		mPortCmdInReceiver.destroy();
 	}
 	
-	@Override
-	public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-		Log.d(getTag(), "surfaceChanged");
-	}
-
-	@Override
-	public void surfaceCreated(SurfaceHolder holder) {
-		Log.d(getTag(), "surfaceCreated");
-		
-		// once the surface for the camera preview is created, we make it disappear 
-		// by setting the width and height to 0
-		LayoutParams params = mCameraPreview.getLayoutParams();
-		params.height = 0;
-		params.width = 0;
-		mWindowManager.updateViewLayout(mCameraPreview, params);
-	}
-
-	@Override
-	public void surfaceDestroyed(SurfaceHolder holder) {
-		Log.d(getTag(), "surfaceDestroyed");
-	}
-
 	@Override
 	public void onFrame(byte[] rgb, int rotation) {
 		if (getOutMessenger("video") != null) {
