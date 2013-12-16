@@ -10,12 +10,9 @@ import org.dobots.lib.comm.msg.RoboCommands.BaseCommand;
 import org.dobots.utilities.Utils;
 import org.dobots.utilities.VerticalSeekBar;
 import org.dobots.zmq.video.gui.VideoHelper;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import robots.ctrl.RemoteControlHelper;
 import robots.ctrl.RemoteControlSender;
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -187,19 +184,10 @@ public class RobotControl extends AimRobotActivity {
 		});
 	}
 	
-	private void handleVideo(String videoMessage) {
-		
-		try {
-			JSONObject json = new JSONObject(videoMessage);
+	private void handleVideo(String videoFrame) {
 
-			byte[] frame = Base64.decode(json.getString("base64"), Base64.NO_WRAP);
-			mVideoHelper.onFrame(frame, json.getInt("rotation"));
-			
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		
+		byte[] frame = Base64.decode(videoFrame, Base64.NO_WRAP);
+		mVideoHelper.onFrame(frame, -1);
 	}
 
 	@Override

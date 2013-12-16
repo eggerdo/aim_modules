@@ -5,21 +5,17 @@ import java.util.List;
 
 import org.dobots.aim.AimProtocol;
 import org.dobots.aim.AimService;
-import org.dobots.aim.AimUtils;
 import org.dobots.lib.comm.msg.RoboCommands;
 import org.dobots.lib.comm.msg.RoboCommands.BaseCommand;
 import org.dobots.lib.comm.msg.RoboCommands.CameraCommand;
 import org.dobots.lib.comm.msg.RoboCommands.ControlCommand;
-import org.dobots.utilities.CameraPreview;
-import org.dobots.utilities.CameraPreview.CameraPreviewCallback;
 import org.dobots.utilities.ThreadMessenger;
+import org.dobots.utilities.camera.CameraPreview;
+import org.dobots.utilities.camera.CameraPreview.CameraPreviewCallback;
 import org.dobots.utilities.log.AndroidLogger;
-import org.dobots.utilities.log.Loggable;
 import org.dobots.utilities.log.Logger;
 import org.dobots.zmq.video.IRawVideoListener;
 import org.dobots.zmq.video.VideoThrottle;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.content.Intent;
 import android.hardware.Camera.Size;
@@ -177,25 +173,15 @@ public class CameraService extends AimService implements IRawVideoListener {
 
 	@Override
 	public void onFrame(byte[] rgb, int rotation) {
-
+		
 		if (getOutMessenger("video_raw") != null) {
-			Bundle data = setVideoData(rgb, rotation);
+			Bundle data = setVideoData(rgb);
 			sendData(getOutMessenger("video_raw"), data);
 		}
 
 		if (getOutMessenger("video_base64") != null) {
 			String base64 = android.util.Base64.encodeToString(rgb, android.util.Base64.NO_WRAP);
-
-			JSONObject json = new JSONObject();
-			try {
-				json.put("base64", base64);
-				json.put("rotation", rotation);
-
-				sendData(getOutMessenger("video_base64"), json.toString());
-			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			sendData(getOutMessenger("video_base64"), base64);
 		}
 
 		//		if (getOutMessenger("yuv") != null) {
@@ -204,19 +190,18 @@ public class CameraService extends AimService implements IRawVideoListener {
 		//		}
 	}
 
-	private Bundle setVideoData(byte[] rgb, int rotation) {
+	private Bundle setVideoData(byte[] rgb) {
 
 		// calculate length
 		int length = 1; // 1 field for the number of structures
-		length += 4; // 2 fields per structure, 1 for number of dim, 1 for length of dim
+		length += 2; // 2 fields per structure, 1 for number of dim, 1 for length of dim
 		length += rgb.length; // number of rgb elements
-		length += 1; // number of rotation elements
 
 		// create aim array
 		int[] aimArray = new int[length];
 
 		// fill array
-		aimArray[0] = 2; // number of 'structures'
+		aimArray[0] = 1; // number of 'structures'
 
 		int index = 1;
 
@@ -226,11 +211,6 @@ public class CameraService extends AimService implements IRawVideoListener {
 		for (int j = 0; j < rgb.length; ++j) {
 			aimArray[index++] = rgb[j];
 		}
-
-		// rotation
-		aimArray[index++] = 1;
-		aimArray[index++] = 1;
-		aimArray[index++] = rotation;
 
 		Bundle bundle = new Bundle();
 		bundle.putInt("datatype", AimProtocol.DATATYPE_INT_ARRAY);
