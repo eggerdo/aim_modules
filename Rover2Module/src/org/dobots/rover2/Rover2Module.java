@@ -5,11 +5,11 @@ import org.dobots.zmq.ZmqHandler;
 
 import robots.RobotType;
 import robots.rover.rover2.ctrl.remote.Rover2RemoteBinder;
-import robots.rover.rover2.gui.Rover2Robot;
+import robots.rover.rover2.gui.Rover2UI;
 import android.os.Bundle;
 import android.util.Log;
 
-public class Rover2Module extends Rover2Robot  {
+public class Rover2Module extends Rover2UI  {
 	
 	private static final String TAG = "Rover2Module";
 	

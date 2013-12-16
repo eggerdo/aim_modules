@@ -2,7 +2,7 @@
 	"name":"CameraModule",
 	"type":"background",
 	"category":"Image processing",
-	"description":"Provides Android Camera as video output",
+	"description":"Provides Android Camera as video output. Video frames are sent as jpg images. (as raw jpg or base64 encoded string)",
 	"default_middleware":"android",
 	"supported_middleware": ["android"],
 	"supported_devices": ["android"],
@@ -20,9 +20,15 @@
 			"middleware":"android"
 		},
 		{
-			"name":"video",
+			"name":"video_base64",
 			"dir":"out",
 			"type":"string",
+			"middleware":"android"
+		},
+		{
+			"name":"video_jpg",
+			"dir":"out",
+			"type":"intarray",
 			"middleware":"android"
 		}
 	]

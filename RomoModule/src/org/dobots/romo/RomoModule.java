@@ -3,12 +3,12 @@ package org.dobots.romo;
 import org.dobots.zmq.ZmqHandler;
 
 import robots.RobotType;
-import robots.romo.gui.RomoRobot;
+import robots.romo.gui.RomoUI;
 import robots.rover.rover2.ctrl.remote.Rover2RemoteBinder;
 import android.os.Bundle;
 import android.util.Log;
 
-public class RomoModule extends RomoRobot {
+public class RomoModule extends RomoUI {
 
 	private static final String TAG = "RomoModule";
 	

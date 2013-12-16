@@ -2,8 +2,10 @@ package org.dobots.duplicator;
 
 import java.util.HashMap;
 
-import org.dobots.aim.AimService;
 import org.dobots.aim.AimProtocol;
+import org.dobots.aim.AimProtocol.AimDataTypeException;
+import org.dobots.aim.AimService;
+import org.dobots.aim.AimUtils;
 
 import android.content.Intent;
 import android.os.Handler;
@@ -26,18 +28,24 @@ public class DuplicatorService extends AimService {
 		public void handleMessage(Message msg) {
 			switch(msg.what) {
 			case AimProtocol.MSG_PORT_DATA:
-				String data = AimProtocol.getStringData(msg);
+				String data;
+				try {
+					data = AimUtils.getStringData(msg);
 				
-				Messenger messenger;
-				
-				messenger = getOutMessenger("out1");
-				if (messenger != null) {
-					dataSend(messenger, data);
-				}
-
-				messenger = getOutMessenger("out2");
-				if (messenger != null) {
-					dataSend(messenger, data);
+					Messenger messenger;
+					
+					messenger = getOutMessenger("out1");
+					if (messenger != null) { 
+						sendData(messenger, data);
+					}
+	
+					messenger = getOutMessenger("out2");
+					if (messenger != null) {
+						sendData(messenger, data);
+					}
+				} catch (AimDataTypeException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 				break;
 			default:

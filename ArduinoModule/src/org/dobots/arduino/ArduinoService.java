@@ -83,6 +83,6 @@ public class ArduinoService extends AimRobotService implements ISensorDataListen
 
 	@Override
 	public void onSensorData(String data) {
-		dataSend(getOutMessenger("sensors"), data);
+		sendData(getOutMessenger("sensors"), data);
 	}
 }
