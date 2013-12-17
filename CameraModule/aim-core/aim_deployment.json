@@ -26,7 +26,7 @@
 			"middleware":"android"
 		},
 		{
-			"name":"video_jpg",
+			"name":"video_raw",
 			"dir":"out",
 			"type":"intarray",
 			"middleware":"android"

@@ -3,7 +3,7 @@ package org.dobots.arduino;
 import robots.arduino.ctrl.ArduinoTypes;
 import robots.arduino.ctrl.IArduino;
 import robots.arduino.gui.ArduinoBluetooth;
-import robots.gui.BluetoothConnectionHelper.BTEnableCallback;
+import robots.gui.comm.bluetooth.BluetoothConnectionHelper.BTEnableCallback;
 import android.bluetooth.BluetoothDevice;
 import android.os.Bundle;
 

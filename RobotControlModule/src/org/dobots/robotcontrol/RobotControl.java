@@ -11,8 +11,8 @@ import org.dobots.utilities.Utils;
 import org.dobots.utilities.VerticalSeekBar;
 import org.dobots.zmq.video.gui.VideoHelper;
 
-import robots.ctrl.RemoteControlHelper;
-import robots.ctrl.RemoteControlSender;
+import robots.ctrl.control.RemoteControlHelper;
+import robots.ctrl.control.RemoteControlSender;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
