@@ -17,7 +17,7 @@ public class SpykeeModule extends SpykeeUI {
 		
 		ZmqHandler.initialize(this);
 		
-		m_eRobot = RobotType.RBT_ROVER2;
+		m_eRobot = RobotType.RBT_SPYKEE;
 		// we don't own the robot because it is a service and could have been started
 		// before displaying the UI
 		m_bOwnsRobot = false;
