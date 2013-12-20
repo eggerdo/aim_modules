@@ -2,7 +2,7 @@
 	"name":"ThrottleModule",
 	"type":"background",
 	"category":"General",
-	"description":"Provides a throttle for string message data. Messages are not sent out faster than defined by the throttles rate.",
+	"description":"Provides a throttle for string message data. The incoming message stream is throttled such that messages on the outgoing stream are sent with the defined rate. To achieve that, the messages in between are dropped.",
 	"default_middleware":"android",
 	"supported_middleware": ["android"],
 	"supported_devices": ["android"],

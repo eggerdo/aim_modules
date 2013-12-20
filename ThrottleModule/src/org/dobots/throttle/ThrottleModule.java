@@ -44,12 +44,13 @@ public class ThrottleModule extends SimpleAimServiceUI {
 			mThrottle = binder.getThrottle();
 			
 			mRate = mThrottle.getRate();
+			edtRate.setText(String.valueOf(mRate));
 		}
 	};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState, ThrottleService.class);
+		super.onCreate(savedInstanceState, ThrottleService.class, R.layout.main);
 
 		Intent intent = new Intent(this, ThrottleService.class);
 		this.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);

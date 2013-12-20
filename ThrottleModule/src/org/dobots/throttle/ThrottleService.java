@@ -7,7 +7,9 @@ import org.dobots.aim.AimProtocol.AimDataTypeException;
 import org.dobots.aim.AimService;
 import org.dobots.aim.AimUtils;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
@@ -18,8 +20,19 @@ public class ThrottleService extends AimService {
 
 	public static final String MODULE_NAME = "ThrottleModule";
 
+	private static final String PREFS_RATE = "frameRate";
+	
+	private static final float DEF_RATE = 0F;
+
 	private long mNextSendTime;
-	private double mRate;
+	private float mRate = 0F;
+
+	@Override
+	public void onCreate() {
+		super.onCreate();
+	
+		readSettings();
+	}
 	
 	@Override
 	public String getModuleName() {
@@ -58,8 +71,10 @@ public class ThrottleService extends AimService {
 	
 	public void setRate(double rate) {
 		if (mRate != rate) {
-			mRate = rate;
+			mRate = (float)rate;
 			mNextSendTime = System.currentTimeMillis();
+			
+			adjustSettings();
 		}
 	}
 
@@ -92,4 +107,19 @@ public class ThrottleService extends AimService {
 		return mBinder;
 	}
 
+
+	private void readSettings() {
+		SharedPreferences prefs = getSharedPreferences("throttleSettings", Context.MODE_PRIVATE);
+		mRate = prefs.getFloat(PREFS_RATE, DEF_RATE);
+	}
+
+	private void adjustSettings() {
+
+		SharedPreferences prefs = getSharedPreferences("throttleSettings", Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = prefs.edit();
+		
+		editor.putFloat(PREFS_RATE, mRate);
+		editor.commit();
+		
+	}
 }
