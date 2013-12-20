@@ -17,22 +17,41 @@ import org.dobots.utilities.log.Logger;
 import org.dobots.zmq.video.IRawVideoListener;
 import org.dobots.zmq.video.VideoThrottle;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.hardware.Camera.Size;
 import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
+import android.util.Log;
 
 public class CameraService extends AimService implements IRawVideoListener {
 
 	private static final String TAG = "CameraService";
 	private static final String MODULE_NAME = "CameraModule";
+	
+	private static final String PREFS_PREVIEWWIDTH = "previewWidth";
+	private static final String PREFS_PREVIEWHEIGHT = "previewHeight";
+	private static final String PREFS_FRAMERATE = "frameRate";
+	private static final String PREFS_AUTOEXPOSURE = "autoExposure";
+	
+	private static final int DEF_PREVIEWWIDTH = 320;
+	private static final int DEF_PREVIEWHEIGHT = 240;
+	private static final float DEF_FRAMERATE = 20F;
+	private static final boolean DEF_AUTOEXPOSURE = true;
 
 	private CameraPreview mCameraPreview;
 	private VideoThrottle mVideoThrottle;
 
+	// settings, stored as shared preferences
+	private int mWidth;
+	private int mHeight;
+	private float mFrameRate;
+	private boolean mAutoExposureEnabled;
+	
 	@Override
 	public String getModuleName() {
 		return MODULE_NAME;
@@ -64,6 +83,8 @@ public class CameraService extends AimService implements IRawVideoListener {
 						setFrameRate((Double)control.getParameter(0));
 					} else if (control.mCommand.equals("setSize")) {
 						setPreviewSize((Integer)control.getParameter(0), (Integer)control.getParameter(1));
+					} else if (control.mCommand.equals("setAutoExposure")) {
+						setAutoExposure((Boolean)control.getParameter(0));
 					}
 				} else if (cmd instanceof CameraCommand) {
 					CameraCommand camera = (CameraCommand)cmd;
@@ -100,7 +121,6 @@ public class CameraService extends AimService implements IRawVideoListener {
 	}
 
 	private IBinder mBinder = new CameraBinder();
-
 	public class CameraBinder extends Binder {
 
 		public CameraService getCamera() {
@@ -110,7 +130,12 @@ public class CameraService extends AimService implements IRawVideoListener {
 	}
 
 	public void setFrameRate(double rate) {
+		Log.d(TAG, String.format("setFrameRate(%d)", rate));
+		
 		mVideoThrottle.setFrameRate(rate);
+
+		mFrameRate = (float) rate;
+		adjustSettings();
 	}
 
 	public double getFrameRate() {
@@ -118,7 +143,13 @@ public class CameraService extends AimService implements IRawVideoListener {
 	}
 
 	public void setPreviewSize(int width, int height) {
+		Log.d(TAG, String.format("setPreviewSize(%d, %d)", width, height));
+		
 		mCameraPreview.setPreviewSize(width, height);
+
+		mWidth = width;
+		mHeight = height;
+		adjustSettings();
 	}
 
 	public Size getPreviewSize() {
@@ -129,6 +160,19 @@ public class CameraService extends AimService implements IRawVideoListener {
 		return mCameraPreview.getSupportedPreviewSizes();
 	}
 
+	public void setAutoExposure(boolean enable) {
+		Log.d(TAG, String.format("setAutoExposure(%b)", enable));
+		
+		mCameraPreview.setAutoExposure(enable);
+		
+		mAutoExposureEnabled = enable;
+		adjustSettings();
+	}
+	
+	public boolean isAutoExposureEnabled() {
+		return mCameraPreview.isAutoExposureEnabled();
+	}
+	
 	@Override
 	public IBinder onBind(Intent intent) {
 		return mBinder;
@@ -139,13 +183,16 @@ public class CameraService extends AimService implements IRawVideoListener {
 		super.onCreate();
 
 		Logger.setLogger(new AndroidLogger());
+		
+		readSettings();
 
 		mCameraPreview = CameraPreview.createCameraWithoutSurface(this);
-		mCameraPreview.setPreviewSize(320, 240);
+		mCameraPreview.setPreviewSize(mWidth, mHeight);
+		mCameraPreview.setAutoExposure(mAutoExposureEnabled);
 
 		mVideoThrottle = new VideoThrottle("videoThrottle");
 		mVideoThrottle.setRawVideoListener(this);
-		mVideoThrottle.setFrameRate(20.0);
+		mVideoThrottle.setFrameRate(mFrameRate);
 
 		mCameraPreview.setFrameListener(new CameraPreviewCallback() {
 
@@ -218,4 +265,25 @@ public class CameraService extends AimService implements IRawVideoListener {
 		return bundle;
 	}
 
+
+	private void readSettings() {
+		SharedPreferences prefs = getSharedPreferences("cameraSettings", Context.MODE_PRIVATE);
+		mWidth = prefs.getInt(PREFS_PREVIEWWIDTH, DEF_PREVIEWWIDTH);
+		mHeight = prefs.getInt(PREFS_PREVIEWHEIGHT, DEF_PREVIEWHEIGHT);
+		mFrameRate = prefs.getFloat(PREFS_FRAMERATE, DEF_FRAMERATE);
+		mAutoExposureEnabled = prefs.getBoolean(PREFS_AUTOEXPOSURE, DEF_AUTOEXPOSURE);
+	}
+
+	private void adjustSettings() {
+
+		SharedPreferences prefs = getSharedPreferences("cameraSettings", Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = prefs.edit();
+		
+		editor.putInt(PREFS_PREVIEWWIDTH, mWidth);
+		editor.putInt(PREFS_PREVIEWHEIGHT, mHeight);
+		editor.putFloat(PREFS_FRAMERATE, mFrameRate);
+		editor.putBoolean(PREFS_AUTOEXPOSURE, mAutoExposureEnabled);
+		editor.commit();
+		
+	}
 }

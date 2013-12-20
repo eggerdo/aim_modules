@@ -20,6 +20,9 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.Spinner;
 
@@ -33,9 +36,10 @@ public class CameraModule extends SimpleAimServiceUI {
 
 	private EditText edtFrameRate;
 	private Spinner spPreviewSizes;
+	private CheckBox cbAutoExposure;
 	
+	private boolean mAutoExposureEnabled;
 	private double mFrameRate;
-
 	private Size mPreviewSize;
 	private List<Size> mSupportedPreviewSizes;
 	
@@ -110,6 +114,9 @@ public class CameraModule extends SimpleAimServiceUI {
 			ArrayAdapter<CameraSize> adapter = new ArrayAdapter<CameraSize>(CameraModule.this, android.R.layout.simple_spinner_dropdown_item, list);
 			spPreviewSizes.setAdapter(adapter);
 			Utils.setSpinnerSelectionWithoutCallingListener(spPreviewSizes, selection);
+			
+			mAutoExposureEnabled = mCamera.isAutoExposureEnabled();
+			cbAutoExposure.setChecked(mAutoExposureEnabled);
 		}
 	};
 
@@ -153,6 +160,17 @@ public class CameraModule extends SimpleAimServiceUI {
 			public void onNothingSelected(AdapterView<?> parent) {
 				// TODO Auto-generated method stub
 				
+			}
+		});
+		
+		cbAutoExposure = (CheckBox) findViewById(R.id.cbAutoExposure);
+		cbAutoExposure.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+			
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+				if (mBound && mAutoExposureEnabled != isChecked) {
+					mCamera.setAutoExposure(isChecked);
+				}
 			}
 		});
 	}

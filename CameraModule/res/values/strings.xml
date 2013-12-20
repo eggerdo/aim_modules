@@ -2,4 +2,18 @@
 
     <string name="app_name">CameraModule</string>
 
+    <string name="module_status">Module status</string>
+
+    <string name="stop">Stop</string>
+
+    <string name="start">Start</string>
+
+    <string name="module_description">This is an AIM module, which runs in the background. Connect it to other modules via the Dodedodo website.</string>
+
+    <string name="frame_rate">Frame Rate</string>
+
+    <string name="video_size">Video Size</string>
+
+    <string name="auto_exposure">Auto Exposure</string>
+
 </resources>
