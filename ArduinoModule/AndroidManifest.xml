@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="org.dobots.arduino"
-    android:versionCode="2"
-    android:versionName="0.2" >
+    android:versionCode="3"
+    android:versionName="0.2.1" >
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -29,7 +29,7 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name="robots.gui.DeviceListActivity"
+        <activity android:name="robots.gui.comm.bluetooth.BluetoothDeviceListActivity"
 			android:label="@string/select_device"
 			android:screenOrientation="portrait" 
 			android:theme="@android:style/Theme.Dialog"
