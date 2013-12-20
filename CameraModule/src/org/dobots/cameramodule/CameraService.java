@@ -169,6 +169,10 @@ public class CameraService extends AimService implements IRawVideoListener {
 		adjustSettings();
 	}
 	
+	public boolean isAutoExposureSupported() {
+		return mCameraPreview.isAutoExposureLockSupported();
+	}
+	
 	public boolean isAutoExposureEnabled() {
 		return mCameraPreview.isAutoExposureEnabled();
 	}

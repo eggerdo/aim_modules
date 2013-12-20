@@ -115,8 +115,12 @@ public class CameraModule extends SimpleAimServiceUI {
 			spPreviewSizes.setAdapter(adapter);
 			Utils.setSpinnerSelectionWithoutCallingListener(spPreviewSizes, selection);
 			
-			mAutoExposureEnabled = mCamera.isAutoExposureEnabled();
-			cbAutoExposure.setChecked(mAutoExposureEnabled);
+			if (mCamera.isAutoExposureSupported()) {
+				mAutoExposureEnabled = mCamera.isAutoExposureEnabled();
+				cbAutoExposure.setChecked(mAutoExposureEnabled);
+			} else {
+				cbAutoExposure.setVisibility(View.GONE);
+			}
 		}
 	};
 
