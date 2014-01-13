@@ -1,8 +1,8 @@
 package org.dobots.piratedotty;
 
 import org.dobots.aimrobotlibrary.AimRobotService;
-import org.dobots.lib.comm.msg.RoboCommands.BaseCommand;
-import org.dobots.lib.comm.msg.RoboCommands.ControlCommand;
+import org.dobots.comm.msg.RoboCommands.BaseCommand;
+import org.dobots.comm.msg.RoboCommands.ControlCommand;
 
 import robots.piratedotty.ctrl.PirateDotty;
 import robots.remote.RobotServiceBinder;

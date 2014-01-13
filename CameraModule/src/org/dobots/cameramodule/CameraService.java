@@ -5,10 +5,10 @@ import java.util.List;
 
 import org.dobots.aim.AimProtocol;
 import org.dobots.aim.AimService;
-import org.dobots.lib.comm.msg.RoboCommands;
-import org.dobots.lib.comm.msg.RoboCommands.BaseCommand;
-import org.dobots.lib.comm.msg.RoboCommands.CameraCommand;
-import org.dobots.lib.comm.msg.RoboCommands.ControlCommand;
+import org.dobots.comm.msg.RoboCommands;
+import org.dobots.comm.msg.RoboCommands.BaseCommand;
+import org.dobots.comm.msg.RoboCommands.CameraCommand;
+import org.dobots.comm.msg.RoboCommands.ControlCommand;
 import org.dobots.utilities.ThreadMessenger;
 import org.dobots.utilities.camera.CameraPreview;
 import org.dobots.utilities.camera.CameraPreview.CameraPreviewCallback;

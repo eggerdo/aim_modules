@@ -6,7 +6,7 @@ import org.dobots.aim.AimProtocol;
 import org.dobots.aim.AimProtocol.AimDataTypeException;
 import org.dobots.aim.AimUtils;
 import org.dobots.aimrobotlibrary.AimRobotActivity;
-import org.dobots.lib.comm.msg.RoboCommands.BaseCommand;
+import org.dobots.comm.msg.RoboCommands.BaseCommand;
 import org.dobots.utilities.Utils;
 import org.dobots.utilities.VerticalSeekBar;
 import org.dobots.zmq.video.gui.VideoHelper;
