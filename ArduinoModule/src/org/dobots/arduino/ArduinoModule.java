@@ -3,7 +3,7 @@ package org.dobots.arduino;
 import org.dobots.zmq.ZmqHandler;
 
 import robots.RobotType;
-import robots.arduino.ctrl.remote.ArduinoRemoteBinder;
+import robots.arduino.ctrl.remote.ArduinoProxy;
 import robots.arduino.gui.ArduinoUI;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,7 +23,7 @@ public class ArduinoModule extends ArduinoUI {
 		m_bOwnsRobot = false;
 
 		// if direct
-		ArduinoRemoteBinder robot = new ArduinoRemoteBinder(this, ArduinoService.class);
+		ArduinoProxy robot = new ArduinoProxy(this, ArduinoService.class);
 		
 		// if ipc
 		//		RemoteRobotWrapper robot = new Rover2Remote(this, RobotType.RBT_ROVER2, Rover2Service.class);

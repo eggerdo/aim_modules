@@ -4,7 +4,7 @@ import org.dobots.zmq.ZmqHandler;
 
 import robots.RobotType;
 import robots.romo.gui.RomoUI;
-import robots.rover.rover2.ctrl.remote.Rover2RemoteBinder;
+import robots.rover.rover2.ctrl.remote.Rover2Proxy;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -23,7 +23,7 @@ public class RomoModule extends RomoUI {
 		m_bOwnsRobot = false;
 
 		// if direct
-		Rover2RemoteBinder robot = new Rover2RemoteBinder(this, RomoService.class);
+		Rover2Proxy robot = new Rover2Proxy(this, RomoService.class);
 		
 		// if ipc
 		//		RemoteRobotWrapper robot = new Rover2Remote(this, RobotType.RBT_ROVER2, Rover2Service.class);

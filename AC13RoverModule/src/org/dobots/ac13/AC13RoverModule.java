@@ -3,7 +3,7 @@ package org.dobots.ac13;
 import org.dobots.zmq.ZmqHandler;
 
 import robots.RobotType;
-import robots.rover.ac13.ctrl.remote.AC13RoverRemoteBinder;
+import robots.rover.ac13.ctrl.remote.AC13RoverProxy;
 import robots.rover.ac13.gui.AC13RoverUI;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,7 +23,7 @@ public class AC13RoverModule extends AC13RoverUI  {
 		m_bOwnsRobot = false;
 
 		// if direct
-		AC13RoverRemoteBinder robot = new AC13RoverRemoteBinder(this, AC13RoverService.class);
+		AC13RoverProxy robot = new AC13RoverProxy(this, AC13RoverService.class);
 		
 		// if ipc
 		//		RemoteRobotWrapper robot = new Ac13RoverRemote(this, RobotType.RBT_Ac13Rover, Ac13RoverService.class);

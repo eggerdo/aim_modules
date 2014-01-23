@@ -3,7 +3,7 @@ package org.dobots.spykee;
 import org.dobots.zmq.ZmqHandler;
 
 import robots.RobotType;
-import robots.spykee.ctrl.remote.SpykeeRemoteBinder;
+import robots.spykee.ctrl.remote.SpykeeProxy;
 import robots.spykee.gui.SpykeeUI;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,7 +23,7 @@ public class SpykeeModule extends SpykeeUI {
 		m_bOwnsRobot = false;
 
 		// if direct
-		SpykeeRemoteBinder robot = new SpykeeRemoteBinder(this, SpykeeService.class);
+		SpykeeProxy robot = new SpykeeProxy(this, SpykeeService.class);
 		
 		// if ipc
 		//		RemoteRobotWrapper robot = new Rover2Remote(this, RobotType.RBT_ROVER2, Rover2Service.class);

@@ -3,7 +3,7 @@ package org.dobots.spytank;
 import org.dobots.zmq.ZmqHandler;
 
 import robots.RobotType;
-import robots.spytank.ctrl.remote.SpyTankRemoteBinder;
+import robots.spytank.ctrl.remote.SpyTankProxy;
 import robots.spytank.gui.SpyTankUI;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,7 +23,7 @@ public class SpyTankModule extends SpyTankUI {
 		m_bOwnsRobot = false;
 
 		// if direct
-		SpyTankRemoteBinder robot = new SpyTankRemoteBinder(this, SpyTankService.class);
+		SpyTankProxy robot = new SpyTankProxy(this, SpyTankService.class);
 		
 		// if ipc
 		//		RemoteRobotWrapper robot = new Rover2Remote(this, RobotType.RBT_ROVER2, Rover2Service.class);

@@ -3,7 +3,7 @@ package org.dobots.piratedotty;
 import org.dobots.zmq.ZmqHandler;
 
 import robots.RobotType;
-import robots.piratedotty.ctrl.remote.PirateDottyRemoteBinder;
+import robots.piratedotty.ctrl.remote.PirateDottyProxy;
 import robots.piratedotty.gui.PirateDottyUI;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,7 +23,7 @@ public class PirateDottyModule extends PirateDottyUI {
 		m_bOwnsRobot = false;
 
 		// if direct
-		PirateDottyRemoteBinder robot = new PirateDottyRemoteBinder(this, PirateDottyService.class);
+		PirateDottyProxy robot = new PirateDottyProxy(this, PirateDottyService.class);
 		
 		// if ipc
 		//		RemoteRobotWrapper robot = new Rover2Remote(this, RobotType.RBT_ROVER2, Rover2Service.class);
