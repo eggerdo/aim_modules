@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.View.OnFocusChangeListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -25,6 +26,7 @@ import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.ToggleButton;
 
 public class CameraModule extends SimpleAimServiceUI {
 
@@ -37,11 +39,14 @@ public class CameraModule extends SimpleAimServiceUI {
 	private EditText edtFrameRate;
 	private Spinner spPreviewSizes;
 	private CheckBox cbAutoExposure;
+	private ToggleButton btnCamera;
+	private EditText edtJpegQuality;
 	
 	private boolean mAutoExposureEnabled;
 	private double mFrameRate;
 	private Size mPreviewSize;
 	private List<Size> mSupportedPreviewSizes;
+	private int mJpegQuality;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +102,9 @@ public class CameraModule extends SimpleAimServiceUI {
 			mFrameRate = mCamera.getFrameRate();
 			edtFrameRate.setText(String.valueOf(mFrameRate));
 			
+			mJpegQuality = mCamera.getJpegQuality();
+			edtJpegQuality.setText(String.valueOf(mJpegQuality));
+			
 			mPreviewSize = mCamera.getPreviewSize();
 			
 			mSupportedPreviewSizes = mCamera.getSupportedPreviewSizes();
@@ -134,6 +142,7 @@ public class CameraModule extends SimpleAimServiceUI {
 			@Override
 			public void onFocusChange(View view, boolean hasFocus) {
 				if (!hasFocus) {
+//					double frameRate = Float.valueOf(edtFrameRate.getText().toString());
 					double frameRate = Double.valueOf(edtFrameRate.getText().toString());
 					if (mBound && frameRate != mFrameRate) {
 						mFrameRate = frameRate;
@@ -177,6 +186,35 @@ public class CameraModule extends SimpleAimServiceUI {
 				}
 			}
 		});
+		
+		btnCamera = (ToggleButton) findViewById(R.id.btnCamera);
+		btnCamera.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				mCamera.toggleCamera();
+			}
+		});
+		
+		edtJpegQuality = (EditText) findViewById(R.id.edtJpegQuality);
+		edtJpegQuality.setOnFocusChangeListener(new OnFocusChangeListener() {
+			
+			@Override
+			public void onFocusChange(View view, boolean hasFocus) {
+				if (!hasFocus) {
+					int jpegQuality = Integer.valueOf(edtJpegQuality.getText().toString());
+					if (mBound && jpegQuality != mJpegQuality) {
+						mJpegQuality = jpegQuality;
+						mCamera.setJpegQuality(jpegQuality);
+					}
+
+					InputMethodManager imm = (InputMethodManager) view.getContext()
+				            .getSystemService(Context.INPUT_METHOD_SERVICE);
+				    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+				}
+			}
+		});
+		
 	}
 	
 	@Override

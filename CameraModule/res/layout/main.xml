@@ -48,10 +48,46 @@
 	    android:text="@string/module_description" />
 
 	<TextView
-	    android:id="@+id/txtFrameRate"
+	    android:id="@+id/txtCamera"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
 	    android:layout_below="@+id/txtDescription"
+	    android:layout_marginTop="32dp"
+	    android:text="@string/camera" />
+	
+	<ToggleButton
+	    android:id="@+id/btnCamera"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignBaseline="@+id/txtCamera"
+	    android:layout_marginLeft="16dp"
+	    android:layout_toRightOf="@+id/txtCamera"
+	    android:textOn="@string/camera_front"
+	    android:textOff="@string/camera_back" />
+
+	<TextView
+	    android:id="@+id/txtJpegQuality"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_below="@+id/txtCamera"
+	    android:layout_marginTop="32dp"
+	    android:text="@string/jpeg_quality" />
+	
+	<EditText
+	    android:id="@+id/edtJpegQuality"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignBaseline="@+id/txtJpegQuality"
+	    android:layout_marginLeft="16dp"
+	    android:layout_toRightOf="@+id/txtJpegQuality"
+	    android:ems="3"
+	    android:inputType="number" />
+	
+	<TextView
+	    android:id="@+id/txtFrameRate"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_below="@+id/txtJpegQuality"
 	    android:layout_marginTop="32dp"
 	    android:text="@string/frame_rate" />
 	

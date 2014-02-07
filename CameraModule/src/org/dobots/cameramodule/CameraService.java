@@ -37,20 +37,28 @@ public class CameraService extends AimService implements IRawVideoListener {
 	private static final String PREFS_PREVIEWHEIGHT = "previewHeight";
 	private static final String PREFS_FRAMERATE = "frameRate";
 	private static final String PREFS_AUTOEXPOSURE = "autoExposure";
+	private static final String PREFS_CAMERATOGGLE = "cameraToggle";
+	private static final String PREFS_JPEGQUALITY = "jpegQuality";
 	
 	private static final int DEF_PREVIEWWIDTH = 320;
 	private static final int DEF_PREVIEWHEIGHT = 240;
 	private static final float DEF_FRAMERATE = 20F;
 	private static final boolean DEF_AUTOEXPOSURE = true;
+	private static final boolean DEF_CAMERATOGGLE = false;
+	private static final int DEF_JPEGQUALITY = 90;
 
 	private CameraPreview mCameraPreview;
 	private VideoThrottle mVideoThrottle;
 
+	private List<Size> mSupportedPreviewSizes = null;
+	
 	// settings, stored as shared preferences
 	private int mWidth;
 	private int mHeight;
 	private float mFrameRate;
 	private boolean mAutoExposureEnabled;
+	private boolean mCameraToggle;
+	private int mJpegQuality;
 	
 	@Override
 	public String getModuleName() {
@@ -85,6 +93,8 @@ public class CameraService extends AimService implements IRawVideoListener {
 						setPreviewSize((Integer)control.getParameter(0), (Integer)control.getParameter(1));
 					} else if (control.mCommand.equals("setAutoExposure")) {
 						setAutoExposure((Boolean)control.getParameter(0));
+					} else if (control.mCommand.equals("setJpegQuality")) {
+						setJpegQuality((Integer)control.getParameter(0));
 					}
 				} else if (cmd instanceof CameraCommand) {
 					CameraCommand camera = (CameraCommand)cmd;
@@ -130,7 +140,7 @@ public class CameraService extends AimService implements IRawVideoListener {
 	}
 
 	public void setFrameRate(double rate) {
-		Log.d(TAG, String.format("setFrameRate(%d)", rate));
+		Log.d(TAG, String.format("setFrameRate(%f)", rate));
 		
 		mVideoThrottle.setFrameRate(rate);
 
@@ -143,12 +153,34 @@ public class CameraService extends AimService implements IRawVideoListener {
 	}
 
 	public void setPreviewSize(int width, int height) {
-		Log.d(TAG, String.format("setPreviewSize(%d, %d)", width, height));
+		Log.d(TAG, String.format("requestPreviewSize(%d, %d)", width, height));
 		
-		mCameraPreview.setPreviewSize(width, height);
+		if (mSupportedPreviewSizes == null) {
+			mSupportedPreviewSizes = mCameraPreview.getSupportedPreviewSizes();
+		}
+		
+		Size closestSize = null;
+		double diff;
+		double minDiff = Double.MAX_VALUE;
+		for (Size size : mSupportedPreviewSizes) {
+			if (size.height == height && size.width == width) {
+				closestSize = size;
+				break;
+			} else {
+				diff = Math.pow(size.height - height, 2) + Math.pow(size.width - width, 2);
+				if (diff < minDiff) {
+					minDiff = diff;
+					closestSize = size;
+				}
+			}
+		}
 
-		mWidth = width;
-		mHeight = height;
+		Log.d(TAG, String.format("setPreviewSize(%d, %d)", closestSize.width, closestSize.height));
+		
+		mCameraPreview.setPreviewSize(closestSize.width, closestSize.height);
+
+		mWidth = closestSize.width;
+		mHeight = closestSize.height;
 		adjustSettings();
 	}
 
@@ -157,7 +189,7 @@ public class CameraService extends AimService implements IRawVideoListener {
 	}
 
 	public List<Size> getSupportedPreviewSizes() {
-		return mCameraPreview.getSupportedPreviewSizes();
+		return mSupportedPreviewSizes = mCameraPreview.getSupportedPreviewSizes();
 	}
 
 	public void setAutoExposure(boolean enable) {
@@ -177,6 +209,24 @@ public class CameraService extends AimService implements IRawVideoListener {
 		return mCameraPreview.isAutoExposureEnabled();
 	}
 	
+	public void setJpegQuality(int quality) {
+		Log.d(TAG, String.format("setJpegQuality(%d)", quality));
+		
+		mCameraPreview.setJpegQuality(quality);
+		
+		mJpegQuality = quality;
+		adjustSettings();
+	}
+	
+	public int getJpegQuality() {
+		return mJpegQuality;
+	}
+	
+	public void toggleCamera() {
+		mCameraToggle = !mCameraToggle;
+		mCameraPreview.toggleCamera();
+	}
+	
 	@Override
 	public IBinder onBind(Intent intent) {
 		return mBinder;
@@ -193,6 +243,11 @@ public class CameraService extends AimService implements IRawVideoListener {
 		mCameraPreview = CameraPreview.createCameraWithoutSurface(this);
 		mCameraPreview.setPreviewSize(mWidth, mHeight);
 		mCameraPreview.setAutoExposure(mAutoExposureEnabled);
+		mCameraPreview.setJpegQuality(mJpegQuality);
+		
+		if (mCameraToggle) {
+			mCameraPreview.toggleCamera();
+		}
 
 		mVideoThrottle = new VideoThrottle("videoThrottle");
 		mVideoThrottle.setRawVideoListener(this);
@@ -276,6 +331,8 @@ public class CameraService extends AimService implements IRawVideoListener {
 		mHeight = prefs.getInt(PREFS_PREVIEWHEIGHT, DEF_PREVIEWHEIGHT);
 		mFrameRate = prefs.getFloat(PREFS_FRAMERATE, DEF_FRAMERATE);
 		mAutoExposureEnabled = prefs.getBoolean(PREFS_AUTOEXPOSURE, DEF_AUTOEXPOSURE);
+		mCameraToggle = prefs.getBoolean(PREFS_CAMERATOGGLE, DEF_CAMERATOGGLE);
+		mJpegQuality = prefs.getInt(PREFS_JPEGQUALITY, DEF_JPEGQUALITY);
 	}
 
 	private void adjustSettings() {
@@ -287,6 +344,8 @@ public class CameraService extends AimService implements IRawVideoListener {
 		editor.putInt(PREFS_PREVIEWHEIGHT, mHeight);
 		editor.putFloat(PREFS_FRAMERATE, mFrameRate);
 		editor.putBoolean(PREFS_AUTOEXPOSURE, mAutoExposureEnabled);
+		editor.putBoolean(PREFS_CAMERATOGGLE, mCameraToggle);
+		editor.putInt(PREFS_JPEGQUALITY, mJpegQuality);
 		editor.commit();
 		
 	}

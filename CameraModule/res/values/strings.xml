@@ -15,5 +15,13 @@
     <string name="video_size">Video Size</string>
 
     <string name="auto_exposure">Auto Exposure</string>
-
+    
+    <string name="camera">Camera</string>
+    
+    <string name="camera_front">Front</string>
+    
+    <string name="camera_back">Back</string>
+    
+    <string name="jpeg_quality">Jpeg Quality</string>
+    
 </resources>
