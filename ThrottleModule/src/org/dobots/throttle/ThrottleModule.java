@@ -52,8 +52,19 @@ public class ThrottleModule extends SimpleAimServiceUI {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState, ThrottleService.class, R.layout.main);
 
+//		Intent intent = new Intent(this, ThrottleService.class);
+//		this.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+		bindToService();
+	}
+	
+	private void bindToService() {
 		Intent intent = new Intent(this, ThrottleService.class);
 		this.bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+	}
+	
+	private void unbindService() {
+		unbindService(mConnection);
+		mBound = false;
 	}
 	
 	@Override
@@ -61,9 +72,20 @@ public class ThrottleModule extends SimpleAimServiceUI {
 		super.onDestroy();
 		
 		if (mBound) {
-			unbindService(mConnection);
-			mBound = false;
+			unbindService();
 		}
+	}
+	
+	@Override
+	protected void stopService() {
+		super.stopService();
+		unbindService();
+	}
+	
+	@Override
+	protected void startService() {
+		super.startService();
+		bindToService();
 	}
 
 	@Override
