@@ -14,6 +14,8 @@
  */
 
 #include <BallTrackerModule.h>
+#include <RobotProxy.h>
+#include <Connection.h>
 
 #include <opencv/cv.h>
 
@@ -25,7 +27,7 @@ namespace rur {
 /**
  * Your Description of this module.
  */
-class BallTrackerModuleExt: public BallTrackerModule {
+class BallTrackerModuleExt: public BallTrackerModule, public Connection {
 private:
 	CvMemStorage* mStorage;
 	CvSeq* mContours;
@@ -39,6 +41,8 @@ private:
 
 	bool mDisplay;
 
+	RobotProxy* mRobot;
+	
 	int mLowerH, mLowerS, mLowerV;
 	int mUpperH, mUpperS, mUpperV;
 	int mArea;
@@ -56,6 +60,10 @@ public:
 	//! As soon as Stop() returns "true", the BallTrackerModuleMain will stop the module
 	bool Stop();
 
+private:
+	// from parent Connection
+	bool send(std::string message);
+
 	void extractDirection(IplImage* image, double angle, CvScalar color, int size, int thickness);
 
 	IplImage* getThresholdedImage(IplImage* imgHSV);
@@ -66,7 +74,16 @@ public:
 
 	IplImage* prepareFrame(IplImage* frame);
 
-	void setwindowSettings();
+	void setWindowSettings();
+	
+	double getAngleOffset(CvPoint objectCenter, CvPoint frameCenter);
+
+	int getObjectDistSize(CvRect object);
+
+	double getDistOffset(CvRect object);
+
+	std::string calculateCommand(double angleOffset, double distOffset);
+
 };
 
 }

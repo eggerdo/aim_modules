@@ -17,6 +17,8 @@
 
 #include <unistd.h>
 
+#include <CTime.h> // For profiling
+
 //#include <highgui.h>
 
 using namespace cv;
@@ -24,6 +26,13 @@ using namespace rur;
 
 #define PI 3.1416
 #define MOVE_THRESHOLD 5
+
+#define MIN_DISTANCE 2
+#define MAX_DISTANCE 80
+
+bool dummySendCommand(std::string cmd) {
+	printf("[BallTracker] sendCommand: %s", cmd.c_str());
+}
 
 //! Replace with your own code
 BallTrackerModuleExt::BallTrackerModuleExt() {
@@ -35,18 +44,18 @@ BallTrackerModuleExt::BallTrackerModuleExt() {
 	mDisplay = true;
 
 	// YELLOW BALL
-//	mLowerH	= 20;
-//	mLowerS	= 140;
-//	mLowerV	= 100;
-//
-//	mUpperH	= 38;
-//	mUpperS	= 256;
-//	mUpperV	= 256;
+	//	mLowerH	= 20;
+	//	mLowerS	= 140;
+	//	mLowerV	= 100;
+	//
+	//	mUpperH	= 38;
+	//	mUpperS	= 256;
+	//	mUpperV	= 256;
 
 	// BLUE BALL
 	mLowerH	= 75;
 	mLowerS	= 105;
-	mLowerV	= 120;
+	mLowerV	= 50;
 
 	mUpperH	= 130;
 	mUpperS	= 256;
@@ -54,25 +63,10 @@ BallTrackerModuleExt::BallTrackerModuleExt() {
 
 	mArea = 1000;
 
-	//	capture =0;
-	//	capture = cvCaptureFromCAM(0);
-	//	if(!capture){
-	//		printf("[BallTracker] Capture failure\n");
-	//		return;
-	//	}
+	setWindowSettings();
 
-	//	IplImage* frame=0;
-	//	frame = cvQueryFrame(capture);
-	//	if(!frame) return;
-
-//	if (mDisplay) {
-//		//		namedWindow("Video");
-//		//		namedWindow("Ball");
-//		cvNamedWindow("Video");
-//		cvNamedWindow("Ball");
-//	}
-
-	setwindowSettings();
+	mRobot = new RobotProxy(this);
+//	mRobot = new RobotProxy(NULL);
 }
 
 //! Replace with your own code
@@ -83,6 +77,10 @@ BallTrackerModuleExt::~BallTrackerModuleExt() {
 	}
 
 	cvReleaseImage(&mImgTracking);
+}
+
+bool BallTrackerModuleExt::send(std::string message) {
+	return writeCommand(message);
 }
 
 void BallTrackerModuleExt::extractDirection(IplImage* image, double angle, CvScalar color, int size, int thickness) {
@@ -126,7 +124,7 @@ void BallTrackerModuleExt::extractDirection(IplImage* image, double angle, CvSca
 }
 
 //This function create two windows and 6 trackbars for the "Ball" window
-void BallTrackerModuleExt::setwindowSettings() {
+void BallTrackerModuleExt::setWindowSettings() {
 	cvNamedWindow("Video");
 	cvNamedWindow("Ball");
 
@@ -169,7 +167,7 @@ CvRect BallTrackerModuleExt::trackObject(IplImage* imgThresh) {
 		int posX = moment10/area;
 		int posY = moment01/area;
 
-//		printf("[BallTracker] moments > x: %d, y: %d, m10: %.3f, m01: %.3f, m00: %.3f\n", posX, posY, moment10, moment01, area);
+		//		printf("[BallTracker] moments > x: %d, y: %d, m10: %.3f, m01: %.3f, m00: %.3f\n", posX, posY, moment10, moment01, area);
 
 		if(mLastX>=0 && mLastY>=0 && posX>=0 && posY>=0)
 		{
@@ -204,24 +202,163 @@ CvRect BallTrackerModuleExt::trackObject(IplImage* imgThresh) {
 						boundingRect.height);
 			}
 
-			double distance = sqrt(pow(posY - mLastY, 2) + pow(posX - mLastX, 2));
-			if (distance > MOVE_THRESHOLD) {
-				double angle = atan2((posY - mLastY), (posX - mLastX));
-				extractDirection(mImgTracking, angle, cvScalar(0, 0, 255), 50, 10);
-				mLastAngle = angle;
-				//			} else {
-				//				extractDirection(mImgTracking, mLastAngle, cvScalar(0, 0, 255), 50, 10);
+			//			double distance = sqrt(pow(posY - mLastY, 2) + pow(posX - mLastX, 2));
+			//			if (distance > MOVE_THRESHOLD) {
+			//				double angle = atan2((posY - mLastY), (posX - mLastX));
+			//				extractDirection(mImgTracking, angle, cvScalar(0, 0, 255), 50, 10);
+			//				mLastAngle = angle;
+			////			} else {
+			////				extractDirection(mImgTracking, mLastAngle, cvScalar(0, 0, 255), 50, 10);
+			//			}
+
+			CvSize frameSize = cvGetSize(imgThresh);
+			CvPoint frameCenter = cvPoint(frameSize.width / 2, frameSize.height / 2);
+
+			printf("[BallTracker] frame c_x=%d, c_y=%d\n", frameCenter.x, frameCenter.y);
+
+			CvPoint objectCenter = cvPoint(boundingRect.x + boundingRect.width / 2, boundingRect.y + boundingRect.height / 2);
+
+			printf("[BallTracker] object c_x=%d, c_y=%d\n", objectCenter.x, objectCenter.y);
+
+			double angleOffset = getAngleOffset(objectCenter, frameCenter);
+
+			printf("[BallTracker] angleOffset: %.2f\n", angleOffset);
+
+//			int distSize = getObjectDistSize(boundingRect);
+
+//			printf("[BallTracker] objectSize: %d\n", distSize);
+
+			double distOffset = getDistOffset(boundingRect);
+
+			if (abs(distOffset) > 0.1) {
+				double angle = distOffset > 0 ? -PI/2 : PI/2;
+
+				extractDirection(mImgTracking, angle, cvScalar(0, 255, 0), MAX(abs(distOffset) * 100, 15), 10);
 			}
 
+			printf("[BallTracker] distOffset: %.2f\n", distOffset);
+
+//			double distance = sqrt(pow(frameCenter.x - objectCenter.x, 2) + pow(frameCenter.y - objectCenter.y, 2));
+			double distance = abs(frameCenter.x - objectCenter.x);
+
+			printf("[BallTracker] distance: %.2f\n", distance);
+
+			if (distance > MIN_DISTANCE) {
+				double angle = objectCenter.x < frameCenter.x ? PI : 0;
+//				double angle = atan2((objectCenter.y - frameCenter.y), (objectCenter.x - frameCenter.x));
+
+				printf("[BallTracker] angle: %.2f\n", angle);
+
+				extractDirection(mImgTracking, angle, cvScalar(0, 0, 255), MAX((int)distance, 15), 10);
+			}
+
+			calculateCommand(angleOffset, distOffset);
+//			writeCommand(*message);
+
+		} else {
+			mRobot->moveStop();
 		}
 
 		mLastX = posX;
 		mLastY = posY;
+	} else {
+		mRobot->moveStop();
 	}
 
 	free(moments);
 
 	return boundingRect;
+}
+
+// neg value to turn right
+// pos value to turn left
+double BallTrackerModuleExt::getAngleOffset(CvPoint objectCenter, CvPoint frameCenter) {
+
+	return (double)(frameCenter.x - objectCenter.x) / frameCenter.x;
+
+//	// for now, only -1 for right, +1 for left
+//	if (objectCenter.x < frameCenter.x) {
+//		return +1;
+//	} else {
+//		return - 1;
+//	}
+
+}
+
+int MAX_DIST_SIZE = 30;
+int MIN_DIST_SIZE = 130;
+int TARGET_DIST_SIZE = 80;
+
+int BallTrackerModuleExt::getObjectDistSize(CvRect object) {
+
+//	printf("objectDistSize=%d\n", object.height);
+	return object.height;
+
+//	return TARGET_DIST_SIZE;
+
+}
+
+// neg value to move backward
+// pos value to move forward
+double BallTrackerModuleExt::getDistOffset(CvRect object) {
+
+	double distOffset;
+
+	int objectDistSize = getObjectDistSize(object);
+	if (objectDistSize < TARGET_DIST_SIZE) {
+		distOffset = (double)(TARGET_DIST_SIZE - objectDistSize) / (double)(TARGET_DIST_SIZE - MAX_DIST_SIZE);
+	} else {
+		distOffset = (double)(TARGET_DIST_SIZE - objectDistSize) / (double)(MIN_DIST_SIZE - TARGET_DIST_SIZE);
+	}
+
+	return distOffset;
+}
+
+template <typename T> int sgn(T val) {
+    return (T(0) < val) - (val < T(0));
+}
+
+#define SPEED_MAX 15
+#define RADIUS_MAX 30
+#define RADIUS_MIN 12
+
+#define ANGLE_THRESHOLD 0.2
+#define DIST_THRESHOLD 0.2
+
+std::string BallTrackerModuleExt::calculateCommand(double angleOffset, double distOffset) {
+
+	double speed, radius;
+
+	speed = fabs(distOffset) * SPEED_MAX;
+	radius = angleOffset * RADIUS_MAX;
+//	radius = fmax(radius, RADIUS_MIN);
+
+	std::string* jsonString;
+	if (fabs(angleOffset) > ANGLE_THRESHOLD) {
+		if (distOffset > DIST_THRESHOLD) {
+			return mRobot->moveForward(speed, sgn(radius) * 90);
+		} else if (distOffset < -DIST_THRESHOLD) {
+			return mRobot->moveBackward(speed, sgn(radius) * 90);
+		} else {
+			if (angleOffset < 0) {
+				return mRobot->rotateClockwise(fabs(radius));
+			} else if (angleOffset > 0) {
+				return mRobot->rotateCounterClockwise(fabs(radius));
+			} else {
+				// not possible to reach here
+				return mRobot->moveStop();
+			}
+		}
+	} else {
+		if (distOffset > DIST_THRESHOLD) {
+			return mRobot->moveForward(speed);
+		} else if (distOffset < -DIST_THRESHOLD) {
+			return mRobot->moveBackward(speed);
+		} else {
+			return mRobot->moveStop();
+		}
+	}
+
 }
 
 IplImage* BallTrackerModuleExt::decodeFrame(std::vector<int>* readVec) {
@@ -294,11 +431,15 @@ IplImage* BallTrackerModuleExt::prepareFrame(IplImage* frame) {
 
 //! Replace with your own code
 void BallTrackerModuleExt::Tick() {
+
 	//	std::cout << "[BallTracker] tick" << std::endl;
 	std::vector<int>* readVec;
 	readVec = readVideo(false);
 
 	if (readVec != NULL && !readVec->empty()) {
+
+		long startTime = get_cur_1ms();
+		long endTime;
 
 		IplImage* frame = decodeFrame(readVec);
 
@@ -329,6 +470,10 @@ void BallTrackerModuleExt::Tick() {
 
 		readVec->clear();
 
+		endTime = get_cur_1ms();
+
+		std::cout << "[BallTracker] decoded in " << get_duration(startTime, endTime) << " ms" << std::endl;
+
 		//	} else {
 		//		std::cout << "[BallTracker] nothing read..." << std::endl;
 	}
@@ -339,6 +484,9 @@ void BallTrackerModuleExt::Tick() {
 	} else {
 		usleep(10*1000);
 	}
+
+//	mRobot->moveStop();
+//	usleep(100*1000);
 
 }
 

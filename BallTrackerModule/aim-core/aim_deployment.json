@@ -1,5 +1,5 @@
 {
-	"name":"BallTrackerModule",
+	"name":"eggerdo/aim_modules/BallTrackerModule",
 	"type":"background",
 	"version":"1",
 	"category":"general",
@@ -16,7 +16,7 @@
 		{
 			"name":"video",
 			"dir":"in",
-			"type":"string",
+			"type":"intarray",
 			"middleware":"default"
 		},
 		{
