@@ -4,7 +4,7 @@ import org.dobots.zmq.ZmqHandler;
 
 import robots.RobotType;
 import robots.parrot.ardrone1.gui.ArDrone1UI;
-import robots.parrot.ardrone2.ctrl.remote.ArDrone2RemoteBinder;
+import robots.parrot.ardrone2.ctrl.remote.ArDrone2Proxy;
 import robots.parrot.ctrl.remote.ParrotProxy;
 import android.os.Bundle;
 import android.util.Log;

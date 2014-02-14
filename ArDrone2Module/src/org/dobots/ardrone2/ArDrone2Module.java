@@ -3,7 +3,7 @@ package org.dobots.ardrone2;
 import org.dobots.zmq.ZmqHandler;
 
 import robots.RobotType;
-import robots.parrot.ardrone2.ctrl.remote.ArDrone2RemoteBinder;
+import robots.parrot.ardrone2.ctrl.remote.ArDrone2Proxy;
 import robots.parrot.ardrone2.gui.ArDrone2UI;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,7 +23,7 @@ public class ArDrone2Module extends ArDrone2UI  {
 		m_bOwnsRobot = false;
 
 		// if direct
-		ArDrone2RemoteBinder robot = new ArDrone2RemoteBinder(this, ArDrone2Service.class);
+		ArDrone2Proxy robot = new ArDrone2Proxy(this, ArDrone2Service.class);
 		
 		// if ipc
 		//		RemoteRobotWrapper robot = new Rover2Remote(this, RobotType.RBT_ROVER2, Rover2Service.class);
