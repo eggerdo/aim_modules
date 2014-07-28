@@ -1,5 +1,5 @@
 {
-	"name":"eggerdo/aim_modules/BallTrackerModule",
+	"name":"BallTrackerModule",
 	"type":"background",
 	"version":"1",
 	"category":"general",
